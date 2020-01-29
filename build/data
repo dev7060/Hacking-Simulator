@@ -1,0 +1,309 @@
+@echo off
+setlocal enableextensions enabledelayedexpansion
+:: Needs an argument.
+if "x%1"=="x" (
+    echo Usage: which ^<progName^>
+    goto :end
+)
+:: First try the unadorned filenmame.
+set fullspec=
+call :find_it %1
+:: Then try all adorned filenames in order.
+set mypathext=!pathext!
+:loop1
+    :: Stop if found or out of extensions.
+    if "x!mypathext!"=="x" goto :loop1end
+    :: Get the next extension and try it.
+    for /f "delims=;" %%j in ("!mypathext!") do set myext=%%j
+    call :find_it %1!myext!
+:: Remove the extension (not overly efficient but it works).
+:loop2
+    if not "x!myext!"=="x" (
+        set myext=!myext:~1!
+        set mypathext=!mypathext:~1!
+        goto :loop2
+    )
+    if not "x!mypathext!"=="x" set mypathext=!mypathext:~1!
+    goto :loop1
+:loop1end
+:end
+endlocal
+goto :eof
+:: Function to find and print a file in the path.
+:find_it
+    for %%i in (%1) do set fullspec=%%~$PATH:i
+    if not "x!fullspec!"=="x" @echo.   !fullspec!
+    goto :eof
+if %hour% leq 6 set res=T
+if %hour% geq 22 set res=T
+if "%res%"=="T" (
+    set state=asleep
+)
+pax> $(ps aux | grep '[s]leep' | awk '{print $2}')
+[5]+  Terminated              sleep 3600
+$(ps aux | grep '[p]ython csp_build.py' | awk '{print $2}')
+<html>
+    <head>
+        <script src="jquery-1.7.1.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                alert ("done");
+            });
+        </script>
+    </head><body>
+        Hello
+        <img src="jollyroger00.jpg">
+        <img src="jollyroger01.jpg">
+        // : 100 copies of this
+        <img src="jollyroger99.jpg">
+    </body>
+</html>
+$(window).on("load", function() {
+    // weave your magic here.
+});
+* * * * * /path/to/executable param1 param2
+* * * * * ( sleep 30 ; /path/to/executable param1 param2 )
+pax> a=/tmp/file.txt
+pax> b=$(basename $a)
+pax> echo $b
+file.txt
+pax> a=/tmp/xx/file.tar.gz
+pax> xpath=${a%/*} 
+pax> xbase=${a##*/}
+pax> xfext=${xbase##*.}
+pax> xpref=${xbase%.*}
+pax> echo;echo path=${xpath};echo pref=${xpref};echo ext=${xfext}
+
+path=/tmp/xx
+pref=file.tar
+ext=gz
+$ VAR=/home/me/mydir/file.c
+
+$ DIR=$(dirname "${VAR}")
+
+$ echo "${DIR}"
+/home/me/mydir
+
+$ basename "${VAR}"
+file.c
+ls -al file.ext
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+ls -al file.ext | sed 's/^/xx: /"
+pax> false | true ; echo ${PIPESTATUS[0]}
+1
+pax> false | true | false; echo ${PIPESTATUS[*]}
+1 0 1
+true | true | false | true | false
+rcs=${PIPESTATUS[*]}; rc=0; for i in ${rcs}; do rc=$(($i > $rc ? $i : $rc)); done
+echo $rc
+import datetime
+a = datetime.datetime(100,1,1,11,34,59)
+b = a + datetime.timedelta(0,3) # days, seconds, then other fields.
+print a.time()
+print b.time()
+11:34:59
+11:35:02
+b = a + datetime.timedelta(seconds=3)
+import datetime
+
+def addSecs(tm, secs):
+    fulldate = datetime.datetime(100, 1, 1, tm.hour, tm.minute, tm.second)
+    fulldate = fulldate + datetime.timedelta(seconds=secs)
+    return fulldate.time()
+
+a = datetime.datetime.now().time()
+b = addSecs(a, 300)
+print a
+print b
+ 09:11:55.775695
+ 09:16:55
+char *strdup(const char *src) {
+    char *dst = malloc(strlen (src) + 1);  // Space for length plus nul
+    if (dst == NULL) return NULL;          // No memory
+    strcpy(dst, src);                      // Copy the characters
+    return dst;                            // Return the new string
+}
+if (d == NULL) {
+    errno = ENOMEM;
+    return NULL;
+}
+char *strdup(const char *src) {
+    size_t len = strlen(src) + 1;       // String plus '\0'
+    char *dst = malloc(len);            // Allocate space
+    if (dst == NULL) return NULL;       // No memory
+    memcpy (dst, src, len);             // Copy the block
+    return dst;                         // Return the new string
+}
+$newtag = preg_replace ("/ +/", " ", $tag); # convert all multispaces to space
+$newtag = preg_replace ("/^ /", "", $tag);  # remove space from start
+$newtag = preg_replace ("/ $/", "", $tag);  # and end
+$newtag = preg_replace ("/[^a-zA-Z0-9 ]/", "", $tag);
+#                                    ^ space here
+typedef struct {
+    int (*open)(void *self, char *fspec);
+    int (*close)(void *self);
+    int (*read)(void *self, void *buff, size_t max_sz, size_t *p_act_sz);
+    int (*write)(void *self, void *buff, size_t max_sz, size_t *p_act_sz);
+    // And data goes here.
+} tCommClass;
+
+tCommClass commRs232;
+commRs232.open = &rs232Open;
+: :
+commRs232.write = &rs232Write;
+
+tCommClass commTcp;
+commTcp.open = &tcpOpen;
+: :
+commTcp.write = &tcpWrite;
+int stat = (commTcp.open)(commTcp, "bigiron.box.com:5000");
+#include <stdio.h>
+
+// The top-level class.
+
+typedef struct sCommClass {
+    int (*open)(struct sCommClass *self, char *fspec);
+} tCommClass;
+// Function for the TCP 'class'.
+
+static int tcpOpen (tCommClass *tcp, char *fspec) {
+    printf ("Opening TCP: %s\n", fspec);
+    return 0;
+}
+static int tcpInit (tCommClass *tcp) {
+    tcp->open = &tcpOpen;
+    return 0;
+}
+// Function for the HTTP 'class'.
+
+static int httpOpen (tCommClass *http, char *fspec) {
+    printf ("Opening HTTP: %s\n", fspec);
+    return 0;
+}
+static int httpInit (tCommClass *http) {
+    http->open = &httpOpen;
+    return 0;
+}
+// Test program.
+
+int main (void) {
+    int status;
+    tCommClass commTcp, commHttp;
+
+    // Same 'base' class but initialised to different sub-classes.
+
+    tcpInit (&commTcp);
+    httpInit (&commHttp);
+
+    // Called in exactly the same manner.
+
+    status = (commTcp.open)(&commTcp, "bigiron.box.com:5000");
+    status = (commHttp.open)(&commHttp, "http://www.microsoft.com");
+
+    return 0;
+}
+  0: <empty>  matched by D?C{0} (with D not there)
+100: C        matched by D?C{1} (with D not there)
+200: CC       matched by D?C{2} (with D not there)
+300: CCC      matched by D?C{3} (with D not there)
+400: CD       matched by CD
+ 0: <empty>  matched by L?X{0} (with L not there)
+10: X        matched by L?X{1} (with L not there)
+20: XX       matched by L?X{2} (with L not there)
+30: XXX      matched by L?X{3} (with L not there)
+40: XL       matched by XL
+target:
+    num1=1 ; while [[ $$num1 -le 4 ]] ; do \
+        num2=1 ; while [[ $$num2 -le 3 ]] ; do \
+            echo $$num1 $$num2 ; \
+            ((num2 = num2 + 1)) ; \
+        done ; \
+        ((num1 = num1 + 1)) ; \
+    done
+target:
+    number=1 ; while [[ $$number -le 10 ]] ; do \
+        echo $$number ; \
+        ((number = number + 1)) ; \
+    done
+if %age% geq 2 (
+    if %age% leq 12 (
+        set class=child
+    )
+)
+@setlocal enableextensions enabledelayedexpansion
+@echo off
+set str1=%1
+if not x%str1:bcd=%==x%str1% echo It contains bcd
+endlocal
+c:\testarea> testprog hello
+
+c:\testarea> testprog abcdef
+It contains bcd
+
+c:\testarea> testprog bcd
+It contains bcd
+@echo off
+setlocal enableextensions enabledelayedexpansion
+
+:: Needs an argument.
+
+if "x%1"=="x" (
+    echo Usage: which ^<progName^>
+    goto :end
+)
+
+:: First try the unadorned filenmame.
+
+set fullspec=
+call :find_it %1
+
+:: Then try all adorned filenames in order.
+
+set mypathext=!pathext!
+:loop1
+    :: Stop if found or out of extensions.
+
+    if "x!mypathext!"=="x" goto :loop1end
+
+    :: Get the next extension and try it.
+
+    for /f "delims=;" %%j in ("!mypathext!") do set myext=%%j
+    call :find_it %1!myext!
+
+:: Remove the extension (not overly efficient but it works).
+
+:loop2
+    if not "x!myext!"=="x" (
+        set myext=!myext:~1!
+        set mypathext=!mypathext:~1!
+        goto :loop2
+    )
+    if not "x!mypathext!"=="x" set mypathext=!mypathext:~1!
+
+    goto :loop1
+:loop1end
+
+:end
+endlocal
+goto :eof
+
+:: Function to find and print a file in the path.
+
+:find_it
+    for %%i in (%1) do set fullspec=%%~$PATH:i
+    if not "x!fullspec!"=="x" @echo.   !fullspec!
+    goto :eof
+c:\> for %i in (cmd.exe) do @echo.   %~$PATH:i
+   C:\WINDOWS\system32\cmd.exe
+
+c:\> for %i in (python.exe) do @echo.   %~$PATH:i
+   C:\Python25\python.exe
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+echo ${machine}
